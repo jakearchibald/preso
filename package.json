@@ -1,0 +1,12 @@
+{
+  "name": "web-present",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Jake Archibald <jaffathecake@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "gulp": "gulpjs/gulp#4.0",
+    "gulp-babel": "^6.1.2"
+  }
+}
