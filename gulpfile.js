@@ -1,6 +1,6 @@
 const gulp = require('gulp');
-const less = require('gulp-less');
 const babel = require('gulp-babel');
+const del = require('del');
 
 const paths = {
   scripts: {

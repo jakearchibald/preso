@@ -6,6 +6,7 @@
   "license": "MIT",
   "dependencies": {
     "babel-plugin-transform-react-jsx": "^6.24.1",
+    "del": "^2.2.2",
     "gulp": "gulpjs/gulp#4.0",
     "gulp-babel": "^6.1.2"
   }
