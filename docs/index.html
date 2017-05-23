@@ -1,4 +1,40 @@
 <!DOCTYPE html>
+<style>
+  html, body {
+    margin: 0;
+  }
+  preso-presentation {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  preso-slide {
+    font-size: 100px;
+  }
+</style>
 <script type="module">
-  import '../dist/presentation/index.js';
+  import Presentation from '../dist/presentation/index.js';
+  import {fadeBlank} from '../dist/presentation/transitions/index.js';
+  const presentation = new Presentation();
+  document.body.append(presentation);
+
+  function wait(ms) {
+    return new Promise(r => setTimeout(r, ms));
+  }
+
+  presentation.slide(async slide => {
+    slide.append('Hello!');
+    await slide.next();
+    slide.append('World!');
+  });
+
+  presentation.transition(fadeBlank());
+
+  presentation.slide(async slide => {
+    slide.prepare(wait(5000));
+    slide.append('Second slide');
+  });
 </script>
