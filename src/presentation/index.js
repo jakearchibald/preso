@@ -2,6 +2,7 @@
 import {h} from '../utils/dom.js';
 import Slide from './slide/index.js';
 import {fade} from './transitions/index.js';
+import css from './style.scss';
 
 export default class Presentation extends HTMLElement {
   constructor() {
@@ -20,7 +21,7 @@ export default class Presentation extends HTMLElement {
     let resizeObserver;
 
     this.attachShadow({mode: 'closed'}).append(
-      this._shadowStyle = <style>{require('static-module').inlineSass(__dirname + '/style.scss')}</style>,
+      this._shadowStyle = <style>{css}</style>,
       <div class="preso__layout">
         {this._stageCell = <div class="preso__cell"></div>}
         {this._notesCell = <div class="preso__cell"></div>}

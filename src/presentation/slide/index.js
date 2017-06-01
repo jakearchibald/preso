@@ -1,7 +1,8 @@
 /** @jsx h */
 import { h } from '../../utils/dom.js';
+import css from './style.scss';
 
-document.head.append(<style>{require('static-module').inlineSass(__dirname + '/style.scss')}</style>);
+document.head.append(<style>{css}</style>);
 
 function rafPromise() {
   return new Promise(r => requestAnimationFrame(r));
