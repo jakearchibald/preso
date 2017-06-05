@@ -4,16 +4,18 @@
   "main": "index.js",
   "author": "Jake Archibald <jaffathecake@gmail.com>",
   "license": "MIT",
-  "scripts": {
-  },
+  "scripts": {},
   "devDependencies": {
     "babel-plugin-transform-react-jsx": "^6.24.1",
+    "chokidar": "^1.7.0",
     "del": "^2.2.2",
     "glob": "^7.1.2",
+    "minimist": "^1.2.0",
     "rollup": "^0.41.6",
     "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-commonjs": "^8.0.2",
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-sass": "^0.5.2"
-  }
+  },
+  "dependencies": {}
 }
