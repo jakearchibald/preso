@@ -16,6 +16,7 @@ presentation.slide(async slide => {
     These are my notes
     And here are some more
   `);
+  presentation.notes.startTimer();
   await slide.next();
   slide.append('World!');
 });

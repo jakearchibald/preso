@@ -4,9 +4,16 @@ preso-notes {
 	font: normal 38px/1.3 sans-serif;
 }
 
+.preso-notes-view {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
 .preso-notes-list {
   margin: 0;
   padding: 0;
+  flex: 1;
 
   &__item {
     display: block;
@@ -16,4 +23,8 @@ preso-notes {
       background: #222;
     }
   }
+}
+
+.preso-notes-time {
+  padding: 0.7em;
 }
