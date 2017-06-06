@@ -2,7 +2,6 @@
 import { h } from '../../utils/dom.js';
 import css from './style.scss';
 
-
 export default class Notes extends HTMLElement {
   constructor() {
     super();

@@ -1,8 +1,29 @@
+const svgNs = 'http://www.w3.org/2000/svg';
+const svgTagNames = new Set();
+
 /**
  * @returns HTMLElement
  */
 export function h(tagName, attributes, ...children) {
-  const el = document.createElement(tagName);
+  let el;
+
+  if (svgTagNames.has(tagName)) {
+    el = document.createElementNS(svgNs, tagName);
+  }
+  else {
+    el = document.createElement(tagName);
+
+    if (el.constructor == HTMLUnknownElement && !tagName.includes('-')) {
+      // Try SVG instead? This is really hacky.
+      // TODO: find a better way.
+      const svgEl = document.createElementNS(svgNs, tagName);
+
+      if (svgEl.constructor !== SVGElement) { // Appears to be for unknown elements
+        el = svgEl;
+        svgTagNames.add(tagName);
+      }
+    }
+  }
 
   if (attributes) for (const [name, val] of Object.entries(attributes)) {
     if (val !== false) el.setAttribute(name, val);
