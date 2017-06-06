@@ -1,4 +1,5 @@
 /** @jsx h */
+import './notes/index.js';
 import {h} from '../utils/dom.js';
 import Slide from './slide/index.js';
 import {fade} from './transitions/index.js';
@@ -10,12 +11,15 @@ export default class Presentation extends HTMLElement {
 
     this.defaultTransition = fade();
 
+    this._hasBeenConnected = false;
     this._currentSlideNum = -1;
     this._currentSlide = null;
     this._slideFuncs = [];
     this._transitionFuncs = [];
-    // This is set in connectedCallback
+    // These are in connectedCallback
     this._shadowStyleProps = null;
+    this._stage = <div class="preso__stage"></div>;
+    this.notes = <preso-notes/>;
 
     // Add shadow dom
     let resizeObserver;
@@ -28,12 +32,6 @@ export default class Presentation extends HTMLElement {
         {resizeObserver = <iframe class="preso__resize-observer"></iframe>}
       </div>,
       <slot/>
-    );
-
-    // Add light dom
-    this.append(
-      this._stage = <div class="preso__stage"></div>,
-      this._notes = <preso-notes class="preso__notes"/>
     );
 
     // Watch for element size changes
@@ -59,23 +57,28 @@ export default class Presentation extends HTMLElement {
           break;
       }
     });
-
-    // Allow focus
-    this.tabIndex = 0;
   }
 
   connectedCallback() {
+    if (!this._hasBeenConnected) {
+      this.append(this._stage, this.notes);
+      this.tabIndex = 0;
+      this._hasBeenConnected = true;
+    }
+
     if (!this._shadowStyleProps) {
       this._shadowStyleProps = this._shadowStyle.sheet.cssRules[this._shadowStyle.sheet.insertRule(':host{}', 0)].style;
       this._shadowStyleProps.setProperty('--preso-width', `${this.width}px`);
       this._shadowStyleProps.setProperty('--preso-height', `${this.height}px`);
+      this._shadowStyleProps.setProperty('--preso-notes-width', `${this.notesWidth}px`);
+      this._shadowStyleProps.setProperty('--preso-notes-height', `${this.notesHeight}px`);
     }
 
     this._handleResize();
   }
 
   attributeChangedCallback(name, oldVal, newVal) {
-    if (name == 'width' || name == 'height') {
+    if (/^(notes-)?(width|height)$/.test(name)) {
       this._shadowStyleProps.setProperty(`--preso-${name}`, `${newVal}px`);
       this._handleResize();
     }
@@ -85,15 +88,27 @@ export default class Presentation extends HTMLElement {
     const stageRect = this._stageCell.getBoundingClientRect();
     const notesRect = this._notesCell.getBoundingClientRect();
 
+    // Resize stage
     const stageScale = Math.min(
       stageRect.width / this.width,
       stageRect.height / this.height
     );
 
-    const stageLeft = (stageRect.width - (this.width * stageScale)) / 2;
-    const stageTop = (stageRect.height - (this.height * stageScale)) / 2;
+    const stageLeft = (stageRect.width - (this.width * stageScale)) / 2 + stageRect.left;
+    const stageTop = (stageRect.height - (this.height * stageScale)) / 2 + stageRect.top;
 
     this._stage.style.transform = `translate(${stageLeft}px, ${stageTop}px) scale(${stageScale})`;
+
+    // Resize notes
+    const notesScale = Math.min(
+      notesRect.width / this.notesWidth,
+      notesRect.height / this.notesHeight
+    );
+
+    const notesLeft = (notesRect.width - (this.notesWidth * notesScale)) / 2 + notesRect.left;
+    const notesTop = (notesRect.height - (this.notesHeight * notesScale)) / 2 + notesRect.top;
+
+    this.notes.style.transform = `translate(${notesLeft}px, ${notesTop}px) scale(${notesScale})`;
   }
 
   /**
@@ -182,7 +197,7 @@ Presentation.observedAttributes = [
 
 // Property accessors for attributes
 for (const attr of Presentation.observedAttributes) {
-  const prop = attr.replace(/-\w/g, '$1');
+  const prop = attr.replace(/-\w/g, match => match.slice(1).toUpperCase());
 
   Object.defineProperty(Presentation.prototype, prop, {
     get() {

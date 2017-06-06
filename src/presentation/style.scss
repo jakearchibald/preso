@@ -34,3 +34,10 @@
   height: var(--preso-height);
   transform-origin: 0 0;
 }
+
+::slotted(preso-notes) {
+  position: absolute;
+  width: var(--preso-notes-width);
+  height: var(--preso-notes-height);
+  transform-origin: 0 0;
+}

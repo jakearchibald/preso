@@ -17,8 +17,8 @@ export default class Slide extends HTMLElement {
     this._preparePromises = [];
     this._currentStateNum = 0;
     this._autoAdvanceNum = 0;
-    this._initialExecutionComplete = false;
-    this.ready = Promise.resolve();
+    this._readyResolve = null;
+    this.ready = new Promise(r => this._readyResolve = r);
     this.transition = true;
   }
 
@@ -30,7 +30,7 @@ export default class Slide extends HTMLElement {
     this._autoAdvanceNum = autoAdvanceNum;
     
     const slideDone = func(this);
-    this._initialExecutionComplete = true;
+    this._readyResolve(Promise.all(this._preparePromises));
     
     await slideDone;
     this._complete = true;
@@ -69,10 +69,6 @@ export default class Slide extends HTMLElement {
       }); 
       
       preparePromises.push(caughtPromise);
-
-      if (!this._initialExecutionComplete) {
-        this.ready = this.ready.then(() => caughtPromise);
-      }
     }
 
     await rafPromise();

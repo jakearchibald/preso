@@ -1,0 +1,19 @@
+preso-notes {
+  background: #000;
+	color: #fff;
+	font: normal 38px/1.3 sans-serif;
+}
+
+.preso-notes-list {
+  margin: 0;
+  padding: 0;
+
+  &__item {
+    display: block;
+    padding: 0.7em;
+
+    &:nth-child(even) {
+      background: #222;
+    }
+  }
+}

@@ -1,8 +1,8 @@
 import Presentation from '../src/presentation/index.js';
 import {fadeBlank} from '../src/presentation/transitions/index.js';
 import {findTexts} from '../src/utils/dom.js';
-const presentation = new Presentation();
-//document.body.append(presentation);
+const presentation = document.createElement('preso-presentation');
+document.body.append(presentation);
 
 function wait(ms) {
   return new Promise(r => setTimeout(r, ms));
@@ -10,6 +10,12 @@ function wait(ms) {
 
 presentation.slide(async slide => {
   slide.append('Hello!');
+  presentation.notes.set(`
+    Hello
+    World
+    These are my notes
+    And here are some more
+  `);
   await slide.next();
   slide.append('World!');
 });
@@ -20,10 +26,3 @@ presentation.slide(async slide => {
   slide.prepare(wait(5000));
   slide.append('Second slide');
 });
-
-for (const range of [...findTexts('TP')]) {
-  const span = document.createElement('span');
-  span.style.background = 'red';
-  span.appendChild(range.extractContents());
-  range.insertNode(span);
-}
