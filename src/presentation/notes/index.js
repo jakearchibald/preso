@@ -7,12 +7,20 @@ export default class Notes extends HTMLElement {
     super();
     this._hasBeenConnected = false;
     this._notesList = <ol class="preso-notes-list"/>;
-    this._time = <div class="preso-notes-time"/>;
+    this._controls = (
+      <div class="preso-notes__controls">
+        {this._time = <div class="preso-notes-time"/>}
+        {this._popOutBtn = <button class="preso-notes__pop-out"><span>Pop-out</span><svg viewBox="0 0 16 20"><path d="M9 0v2h3L7 7l2 2 5-5v3h2V0H9zm5 14H2V2h4V0H0v16h16v-6h-2v4z"/></svg></button>}
+      </div>
+    );
     this._timeFormat = new Intl.DateTimeFormat('lookup', {
       timeZone: 'UTC',
       hour: 'numeric', minute: 'numeric', second: 'numeric'
     });
     this._timerStart = 0;
+
+    // Listeners
+    this._popOutBtn.addEventListener('click', () => this._onPopOutClick());
   }
   connectedCallback() {
     if (this._hasBeenConnected) return;
@@ -23,9 +31,12 @@ export default class Notes extends HTMLElement {
       <style>{css}</style>,
       <div class="preso-notes-view">
         {this._notesList}
-        {this._time}
+        {this._controls}
       </div>
     );
+  }
+  _onPopOutClick() {
+    this.dispatchEvent(new CustomEvent('popoutclick'));
   }
   set(notes) {
     if (!Array.isArray(notes)) {

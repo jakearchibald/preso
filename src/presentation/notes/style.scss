@@ -28,3 +28,49 @@ preso-notes {
 .preso-notes-time {
   padding: 0.7em;
 }
+
+.preso-notes__controls {
+  display: flex;
+}
+
+.preso-notes__pop-out {
+  margin-right: 0.7em;
+  margin-left: auto;
+  padding: 0;
+  fill: white;
+  font: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+  position: relative;
+  text-indent: -1000px;
+  overflow: hidden;
+  width: 44px;
+
+  & svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// Popup stuff
+.notes-popup {
+  background: #000;
+  & body {
+    margin: 0;
+  }
+  & preso-notes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transform-origin: 0 0;
+  }
+  & .preso-notes__pop-out {
+    display: none;
+  }
+}

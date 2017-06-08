@@ -1,6 +1,6 @@
 /** @jsx h */
 import './notes/index.js';
-import {h} from '../utils/dom.js';
+import {h, createEmptyWindow} from '../utils/dom.js';
 import Slide from './slide/index.js';
 import {fade} from './transitions/index.js';
 import css from './style.scss';
@@ -16,10 +16,9 @@ export default class Presentation extends HTMLElement {
     this._currentSlide = null;
     this._slideFuncs = [];
     this._transitionFuncs = [];
-    // These are in connectedCallback
-    this._shadowStyleProps = null;
+    // Appended in connectedCallback
     this._stage = <div class="preso__stage"></div>;
-    this.notes = <preso-notes/>;
+    this.notes = <preso-notes></preso-notes>;
 
     // Add shadow dom
     let resizeObserver;
@@ -27,8 +26,8 @@ export default class Presentation extends HTMLElement {
     this.attachShadow({mode: 'closed'}).append(
       this._shadowStyle = <style>{css}</style>,
       <div class="preso__layout">
-        {this._stageCell = <div class="preso__cell"></div>}
-        {this._notesCell = <div class="preso__cell"></div>}
+        {this._stageCell = <div class="preso__cell"/>}
+        {this._notesCell = <div class="preso__cell"/>}
         {resizeObserver = <iframe class="preso__resize-observer"></iframe>}
       </div>,
       <slot/>
@@ -57,31 +56,56 @@ export default class Presentation extends HTMLElement {
           break;
       }
     });
+
+    // Other listeners
+    this.notes.addEventListener('popoutclick', () => this._onPopOutClick());
   }
 
   connectedCallback() {
     if (!this._hasBeenConnected) {
       this.append(this._stage, this.notes);
       this.tabIndex = 0;
-      this._hasBeenConnected = true;
-    }
 
-    if (!this._shadowStyleProps) {
-      this._shadowStyleProps = this._shadowStyle.sheet.cssRules[this._shadowStyle.sheet.insertRule(':host{}', 0)].style;
-      this._shadowStyleProps.setProperty('--preso-width', `${this.width}px`);
-      this._shadowStyleProps.setProperty('--preso-height', `${this.height}px`);
-      this._shadowStyleProps.setProperty('--preso-notes-width', `${this.notesWidth}px`);
-      this._shadowStyleProps.setProperty('--preso-notes-height', `${this.notesHeight}px`);
+      this._stage.style.width = `${this.width}px`;
+      this._stage.style.height = `${this.height}px`;
+      this.notes.style.width = `${this.notesWidth}px`;
+      this.notes.style.height = `${this.notesHeight}px`;
+
+      this._hasBeenConnected = true;
     }
 
     this._handleResize();
   }
 
   attributeChangedCallback(name, oldVal, newVal) {
-    if (/^(notes-)?(width|height)$/.test(name)) {
-      this._shadowStyleProps.setProperty(`--preso-${name}`, `${newVal}px`);
-      this._handleResize();
+    switch(name) {
+      case 'width':
+        this._stage.style.width = `${this.width}px`;
+        this._handleResize();
+        break;
+      case 'height':
+        this._stage.style.height = `${this.height}px`;
+        this._handleResize();
+        break;
+      case 'notes-width':
+        this.notes.style.width = `${this.notesWidth}px`;
+        this._handleResize();
+        break;
+      case 'notes-height':
+        this.notes.style.height = `${this.notesHeight}px`;
+        this._handleResize();
+        break;
     }
+  }
+
+  _onPopOutClick() {
+    const win = createEmptyWindow();
+    win.document.documentElement.classList.add('notes-popup');
+    win.document.body.append(this.notes);
+    this._notesCell.remove();
+    this._notesCell = win.document.documentElement;
+    win.addEventListener('resize', () => this._handleResize());
+    this._handleResize();
   }
 
   _handleResize() {

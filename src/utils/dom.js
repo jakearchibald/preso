@@ -115,3 +115,8 @@ export function* findTexts(str, {
   }
 }
 
+export function createEmptyWindow(name) {
+  return window.open(null, name,
+    'menubar=no,toolbar=no,location=no,status=no'
+  );
+}

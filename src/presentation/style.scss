@@ -15,8 +15,12 @@
     left: 0;
     right: 0;
     bottom: 0;
-    display: grid;
-    grid-template-rows: 1fr 1fr;
+    display: flex;
+    flex-flow: column;
+  }
+
+  &__cell {
+    flex: 1;
   }
 
   &__resize-observer {
@@ -31,14 +35,10 @@
 
 ::slotted(.preso__stage) {
   position: absolute;
-  width: var(--preso-width);
-  height: var(--preso-height);
   transform-origin: 0 0;
 }
 
 ::slotted(preso-notes) {
   position: absolute;
-  width: var(--preso-notes-width);
-  height: var(--preso-notes-height);
   transform-origin: 0 0;
 }
