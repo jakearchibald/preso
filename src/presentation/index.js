@@ -1,6 +1,6 @@
 /** @jsx h */
 import './notes/index.js';
-import {h, createEmptyWindow} from '../utils/dom.js';
+import {h, createDetectableWindow, detectableWindowExists} from '../utils/dom.js';
 import Slide from './slide/index.js';
 import {fade} from './transitions/index.js';
 import css from './style.scss';
@@ -19,6 +19,7 @@ export default class Presentation extends HTMLElement {
     // Appended in connectedCallback
     this._stage = <div class="preso__stage"></div>;
     this.notes = <preso-notes></preso-notes>;
+    this._notesWindow = null;
 
     // Add shadow dom
     let resizeObserver;
@@ -54,15 +55,20 @@ export default class Presentation extends HTMLElement {
           event.preventDefault();
           this.previous({preventTransition: true});
           break;
+        case 'f':
+          event.preventDefault();
+          this._fullscreen();
       }
     });
 
     // Other listeners
-    this.notes.addEventListener('popoutclick', () => this._onPopOutClick());
+    this.notes.addEventListener('popoutclick', () => this._popoutNotes());
   }
 
-  connectedCallback() {
+  async connectedCallback() {
     if (!this._hasBeenConnected) {
+      this.style.opacity = 0;
+      this._hasBeenConnected = true;
       this.append(this._stage, this.notes);
       this.tabIndex = 0;
 
@@ -71,7 +77,10 @@ export default class Presentation extends HTMLElement {
       this.notes.style.width = `${this.notesWidth}px`;
       this.notes.style.height = `${this.notesHeight}px`;
 
-      this._hasBeenConnected = true;
+      if (await detectableWindowExists('notes')) {
+        this._popoutNotes();
+      }
+      this.style.opacity = 1;
     }
 
     this._handleResize();
@@ -98,14 +107,25 @@ export default class Presentation extends HTMLElement {
     }
   }
 
-  _onPopOutClick() {
-    const win = createEmptyWindow();
+  _popoutNotes() {
+    const win = createDetectableWindow('notes');
+    this._notesWindow = win;
     win.document.documentElement.classList.add('notes-popup');
     win.document.body.append(this.notes);
     this._notesCell.remove();
     this._notesCell = win.document.documentElement;
     win.addEventListener('resize', () => this._handleResize());
     this._handleResize();
+  }
+
+  _fullscreen() {
+    this.webkitRequestFullscreen();
+    this.style.cursor = 'none';
+
+    // Fullscreen notes too
+    if (this._notesWindow) {
+      this._notesWindow.document.body.webkitRequestFullscreen();
+    }
   }
 
   _handleResize() {

@@ -115,8 +115,44 @@ export function* findTexts(str, {
   }
 }
 
-export function createEmptyWindow(name) {
-  return window.open(null, name,
+const localStorageKeyPrefix = 'are-you-there-';
+
+export function createDetectableWindow(name) {
+  const win = window.open(null, name,
     'menubar=no,toolbar=no,location=no,status=no'
   );
+
+  // Empty previous contents
+  win.document.open();
+  // Listen for "are you there?" requests
+  win.document.write(`
+    <script>
+      window.addEventListener('storage', ({key, newValue}) => {
+        if (key == ${JSON.stringify(localStorageKeyPrefix)} + ${JSON.stringify(name)} && newValue == 'ask') {
+          window.localStorage.setItem(key, 'yes');
+        }
+      });
+    </script>
+  `)
+  win.document.close();
+
+
+  return win;
+}
+
+export function detectableWindowExists(name) {
+  return new Promise(resolve => {
+    function listener({key, newValue}) {
+      if (key == localStorageKeyPrefix + name && newValue == 'yes') {
+        resolve(true);
+      }
+    }
+    window.addEventListener('storage', listener);
+    localStorage.setItem(localStorageKeyPrefix + name, 'ask');
+    setTimeout(() => {
+      resolve(false);
+      localStorage.setItem(localStorageKeyPrefix + name, 'no');
+      window.removeEventListener('storage', listener);
+    }, 100);
+  });
 }
