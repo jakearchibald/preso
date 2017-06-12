@@ -7,7 +7,7 @@ export function fade({
   easing = easeInOutQuad
 }={}) {
   return async function(slide) {
-    await slide.prepare();
+    await slide.currentSynchronized();
 
     const anim = slide.animate([
       {opacity: 0},
@@ -53,9 +53,11 @@ export function fadeBlank({
 
     stage.append(blank);
 
-    slide.prepare(fadeInAnim.finished);
+    const slideReady = await slide.currentSynchronized();
 
-    await slide.ready;
+    slide.synchronize(fadeInAnim.finished);
+
+    await slideReady;
 
     fadeInAnim.play();
 

@@ -1,5 +1,6 @@
 /** @jsx h */
 import { h } from '../../utils/dom.js';
+import { animWatcher } from '../../utils/anims';
 import css from './style.scss';
 
 document.head.append(<style>{css}</style>);
@@ -14,12 +15,13 @@ export default class Slide extends HTMLElement {
     this._func = null;
     this._nextResolve = null;
     this._complete = false;
-    this._preparePromises = [];
+    this._synchronizePromises = [];
     this._currentStateNum = 0;
     this._autoAdvanceNum = 0;
-    this._readyResolve = null;
-    this.ready = new Promise(r => this._readyResolve = r);
     this.transition = true;
+
+    // Enables auto-animating elements with particular attributes
+    animWatcher(this);
   }
 
   async _run(func, {
@@ -30,7 +32,6 @@ export default class Slide extends HTMLElement {
     this._autoAdvanceNum = autoAdvanceNum;
     
     const slideDone = func(this);
-    this._readyResolve(Promise.all(this._preparePromises));
     
     await slideDone;
     this._complete = true;
@@ -55,25 +56,29 @@ export default class Slide extends HTMLElement {
     }).then(() => {
       this._currentStateNum++;
       this._nextResolve = null;
-      this._preparePromises = [Promise.all(this._preparePromises)];
+      this._synchronizePromises = [Promise.all(this._synchronizePromises)];
     });
   }
 
-  async prepare(promise = undefined) {
-    const preparePromises = this._preparePromises;
+  async synchronize(promise = undefined) {
+    const synchronizePromises = this._synchronizePromises;
     
     if (promise) {
       const caughtPromise = promise.catch(err => {
         // Don't rethrow the error, just log
-        console.error('Prepare promise rejected', err);
+        console.error('synchronize promise rejected', err);
       }); 
       
-      preparePromises.push(caughtPromise);
+      synchronizePromises.push(caughtPromise);
     }
 
     await rafPromise();
 
-    return Promise.all(preparePromises);
+    return Promise.all(synchronizePromises);
+  }
+
+  currentSynchronized() {
+    return Promise.all(this._synchronizePromises);
   }
 }
 

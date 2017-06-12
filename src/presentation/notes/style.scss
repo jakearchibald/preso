@@ -25,6 +25,26 @@ preso-notes {
   }
 }
 
+.preso-slide-list {
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  display: flex;
+  flex-flow: column wrap;
+
+  &__item {
+    display: block;
+    padding: 0;
+  }
+  &__button {
+    padding: 0.7em;
+    font: inherit;
+    color: inherit;
+    border: none;
+    background: none;
+  }
+}
+
 .preso-notes-time {
   padding: 0.7em;
 }
@@ -33,19 +53,24 @@ preso-notes {
   display: flex;
 }
 
-.preso-notes__pop-out {
-  margin-right: 0.7em;
+.preso-notes__buttons {
   margin-left: auto;
-  padding: 0;
+  margin-right: 0;
+  display: flex;
+}
+
+.preso-notes__button {
+  margin-right: 0.7em;
   fill: white;
   font: inherit;
+  padding: 0;
   border: none;
   background: none;
   cursor: pointer;
   position: relative;
   text-indent: -1000px;
   overflow: hidden;
-  width: 44px;
+  width: 1.6em;
 
   & svg {
     position: absolute;
@@ -70,7 +95,7 @@ preso-notes {
     bottom: 0;
     transform-origin: 0 0;
   }
-  & .preso-notes__pop-out {
+  & .preso-notes__popout-button {
     display: none;
   }
 }

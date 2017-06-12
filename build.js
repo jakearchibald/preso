@@ -75,7 +75,7 @@ const rollupPlugins = [
     persistent: argv.watch
   }).on('add', script).on('change', script);
 
-  chokidar.watch('doc-src/index.html', {
+  chokidar.watch(['doc-src/index.html', 'doc-src/imgs/**'], {
     persistent: argv.watch
   }).on('add', copy).on('change', copy);
 

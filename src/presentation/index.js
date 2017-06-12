@@ -2,7 +2,7 @@
 import './notes/index.js';
 import {h, createDetectableWindow, detectableWindowExists} from '../utils/dom.js';
 import Slide from './slide/index.js';
-import {fade} from './transitions/index.js';
+import {fade, fadeBlank} from './transitions/index.js';
 import css from './style.scss';
 
 export default class Presentation extends HTMLElement {
@@ -63,6 +63,7 @@ export default class Presentation extends HTMLElement {
 
     // Other listeners
     this.notes.addEventListener('popoutclick', () => this._popoutNotes());
+    this.notes.addEventListener('slideswitch', event => this._onSlideSwitchClicked(event));
   }
 
   async connectedCallback() {
@@ -105,6 +106,10 @@ export default class Presentation extends HTMLElement {
         this._handleResize();
         break;
     }
+  }
+
+  _onSlideSwitchClicked(event) {
+    this.goTo(event.detail.slideIndex, { transition: fadeBlank() });
   }
 
   _popoutNotes() {
@@ -155,12 +160,16 @@ export default class Presentation extends HTMLElement {
     this.notes.style.transform = `translate(${notesLeft}px, ${notesTop}px) scale(${notesScale})`;
   }
 
-  /**
-   * @param {function(Slide): PromiseLike} asyncFunc
-   */
-  slide(asyncFunc) {
+  slide(slideName, asyncFunc) {
+    // Make slideName optional:
+    if (!asyncFunc) {
+      asyncFunc = slideName;
+      slideName = 'Unknown slide';
+    }
+
     this._slideFuncs.push(asyncFunc);
     this._transitionFuncs.push(this.defaultTransition);
+    this.notes._addSlideReference(slideName);
 
     if (this._slideFuncs.length == 1) {
       this.goTo(0);
@@ -173,7 +182,8 @@ export default class Presentation extends HTMLElement {
 
   async goTo(num, {
     state = 0,
-    preventTransition = false
+    preventTransition = false,
+    transition
   }={}) {
     const slide = new Slide();
     const exitingSlide = this._currentSlide;
@@ -190,13 +200,14 @@ export default class Presentation extends HTMLElement {
       preventTransition
     });
 
-    const transition = preventTransition ? false : this._transitionFuncs[num - 1];
+    // Use the provided transition, avoid transitioning, or use the slide's transition
+    transition = transition || (preventTransition ? false : this._transitionFuncs[num - 1]);
 
     if (transition) {
       await transition(slide, exitingSlide, this._stage);
     }
     else {
-      await slide.prepare();
+      await slide.synchronize();
       slide.style.opacity = 1;
     }
 
