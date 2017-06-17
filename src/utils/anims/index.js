@@ -17,7 +17,8 @@ export async function fadeIn(element, {
     {opacity: 0.0001},
     {opacity: 1}
   ], {
-    duration, easing
+    duration: duration * slide.transition,
+    easing
   }).finished;
 }
 
@@ -34,7 +35,8 @@ export async function fadeOut(element, {
     { opacity: 1 },
     { opacity: 0 }
   ], {
-    duration, easing,
+    duration: duration * slide.transition,
+    easing,
     fill: 'forwards'
   }).finished;
 }
@@ -43,8 +45,10 @@ export function animWatcher(element) {
   new MutationObserver(records => {
     for (const {addedNodes} of records) {
       for (const node of addedNodes) {
-        // fade-in etc
-        if (node.nodeType == 1 && node.hasAttribute('fade-in')) {
+        if (node.nodeType != 1) continue;
+
+        // fade-in
+        if (node.hasAttribute('fade-in')) {
           node.removeAttribute('fade-in');
           const opts = {};
 
@@ -58,7 +62,7 @@ export function animWatcher(element) {
             node.removeAttribute('fade-easing')
           }
 
-          fadeIn(node);
+          fadeIn(node, opts);
         }
       }
     }
