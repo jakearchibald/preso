@@ -21,5 +21,8 @@
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-sass": "^0.5.2"
   },
-  "dependencies": {}
+  "dependencies": {
+    "gsap": "^1.19.1",
+    "highlight.js": "^9.12.0"
+  }
 }
