@@ -1,5 +1,5 @@
 /** @jsx h */
-import { h } from '../utils/dom.js';
+import { h, findText, getRangeDimensions } from '../utils/dom.js';
 import { easeOutQuad } from '../utils/css-ease.js';
 import css from './style.scss';
 import hljs from 'highlight.js/lib/highlight.js';
@@ -25,6 +25,7 @@ export default class Code extends HTMLElement {
     this._content = Promise.resolve('');
     this._queue = Promise.resolve();
     this._updateQueued = false;
+
     this._pre = (
       <pre>
         {this._code = <code class="hljs" />}
@@ -88,21 +89,29 @@ export default class Code extends HTMLElement {
     }
 
     const lines = (await this._content).split('\n');
-    // Start begins at 1
-    const start = (this.start || 1) - 1;
-    // End is inclusive
+    const start = this.start || 1;
     const end = (this.end || lines.length);
-    const content = lines.slice(start, end).join('\n');
+    // Start begins at 1, so deduct 1
+    const content = lines.slice(start - 1, end).join('\n');
     const startHeight = window.getComputedStyle(this).height;
 
     // Set code
-    const result = hljs.highlight(lang, content);
-    this._code.innerHTML = result.value;
+    // Are we just hiding existing code?
+    // TODO: this shouldn't happen if lang has changed
+    if (this.textContent.startsWith(content)) {
+      const range = findText(content, {root: this});
+
+      const {height} = getRangeDimensions(range);
+      this.style.height = height + 'px';
+    }
+    else {
+      const result = hljs.highlight(lang, content);
+      this._code.innerHTML = result.value;
+      this.style.height = '';
+    }
 
     // Transition
     const slide = this.closest('preso-slide');
-    
-    this.style.height = '';
     
     if (!slide.transition) return;
 
@@ -115,6 +124,10 @@ export default class Code extends HTMLElement {
       duration: 300,
       easing: easeOutQuad
     }).finished;
+  }
+  show(start, end) {
+    this.start = start;
+    this.end = end;
   }
 }
 

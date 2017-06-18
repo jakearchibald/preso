@@ -160,3 +160,29 @@ export function detectableWindowExists(name) {
 export function frame() {
   return new Promise(r => requestAnimationFrame(r));
 }
+
+export function getCompoundTransform(element) {
+  const chain = [];
+
+  while (element) {
+    chain.push(element);
+    element = element.parentElement;
+  }
+
+  return chain.reverse().reduce((matrix, el) => {
+    return matrix.multiplySelf(
+      new DOMMatrix(window.getComputedStyle(el).transform)
+    );
+  }, new DOMMatrix());
+}
+
+export function getRangeDimensions(range) {
+  const quad = DOMQuad.fromRect(range.getBoundingClientRect());
+  const m = getCompoundTransform(range.commonAncestorContainer).invertSelf();
+  const topLeft = quad.p1.matrixTransform(m);
+  const bottomRight = quad.p3.matrixTransform(m);
+  return {
+    width: bottomRight.x - topLeft.x,
+    height: bottomRight.y - topLeft.y
+  };
+}
