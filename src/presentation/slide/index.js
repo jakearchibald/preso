@@ -1,13 +1,9 @@
 /** @jsx h */
-import { h } from '../../utils/dom.js';
+import { h, frame } from '../../utils/dom.js';
 import { animWatcher } from '../../utils/anims';
 import css from './style.scss';
 
 document.head.append(<style>{css}</style>);
-
-function rafPromise() {
-  return new Promise(r => requestAnimationFrame(r));
-}
 
 export default class Slide extends HTMLElement {
   constructor() {
@@ -72,7 +68,7 @@ export default class Slide extends HTMLElement {
       synchronizePromises.push(caughtPromise);
     }
 
-    await rafPromise();
+    await frame();
 
     return Promise.all(synchronizePromises);
   }

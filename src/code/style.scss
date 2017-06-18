@@ -1,0 +1,15 @@
+@import '../../node_modules/highlight.js/styles/tomorrow-night';
+
+preso-code {
+  overflow: hidden;
+  display: block;
+  
+  & pre {
+    margin: 0;
+  }
+
+  & .hljs {
+    padding: 0;
+    background: none;
+  }
+}

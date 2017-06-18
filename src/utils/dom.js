@@ -156,3 +156,7 @@ export function detectableWindowExists(name) {
     }, 100);
   });
 }
+
+export function frame() {
+  return new Promise(r => requestAnimationFrame(r));
+}
