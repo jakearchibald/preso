@@ -176,13 +176,32 @@ export function getCompoundTransform(element) {
   }, new DOMMatrix());
 }
 
-export function getRangeDimensions(range) {
-  const quad = DOMQuad.fromRect(range.getBoundingClientRect());
-  const m = getCompoundTransform(range.commonAncestorContainer).invertSelf();
-  const topLeft = quad.p1.matrixTransform(m);
-  const bottomRight = quad.p3.matrixTransform(m);
-  return {
-    width: bottomRight.x - topLeft.x,
-    height: bottomRight.y - topLeft.y
-  };
+function rectToQuad(rect) {
+  return DOMQuad.fromRect({
+    x: ('x' in rect) ? rect.x : rect.left, 
+    y: ('y' in rect) ? rect.y : rect.top,
+    width: rect.width,
+    height: rect.height 
+  });
+}
+
+export function getRelativeBoundingClientRect(from, to) {
+  // Deal with ranges
+  let toEl = to.commonAncestorContainer || to;
+
+  if (toEl.nodeType != 1) toEl = toEl.parentElement;
+
+  const m = getCompoundTransform(toEl).invertSelf();
+  const fromQuad = rectToQuad(from.getBoundingClientRect());
+  const toQuad = rectToQuad(to.getBoundingClientRect());
+  const fromTopLeft = fromQuad.p1.matrixTransform(m);
+  const toTopLeft = toQuad.p1.matrixTransform(m);
+  const toBottomRight = toQuad.p3.matrixTransform(m);
+
+  return new DOMRectReadOnly(
+    toTopLeft.x - fromTopLeft.x,
+    toTopLeft.y - fromTopLeft.y,
+    toBottomRight.x - toTopLeft.x,
+    toBottomRight.y - toTopLeft.y
+  );
 }

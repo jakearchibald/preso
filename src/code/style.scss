@@ -3,13 +3,25 @@
 preso-code {
   overflow: hidden;
   display: block;
+  position: relative;
   
   & pre {
     margin: 0;
+    position: relative;
   }
 
   & .hljs {
     padding: 0;
     background: none;
+  }
+}
+
+.preso-code {
+  &__highlights {
+    opacity: 0.2;
+  }
+  &__highlight {
+    position: absolute;
+    background: #fff;
   }
 }

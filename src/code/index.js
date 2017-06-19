@@ -1,6 +1,6 @@
 /** @jsx h */
-import { h, findText, getRangeDimensions } from '../utils/dom.js';
-import { easeOutQuad } from '../utils/css-ease.js';
+import { h, findText, getRelativeBoundingClientRect } from '../utils/dom.js';
+import { easeOutQuad, easeOutQuint } from '../utils/css-ease.js';
 import css from './style.scss';
 import hljs from 'highlight.js/lib/highlight.js';
 import js from 'highlight.js/lib/languages/javascript.js';
@@ -23,14 +23,14 @@ export default class Code extends HTMLElement {
     super();
     this._hasBeenConnected = false;
     this._content = Promise.resolve('');
-    this._queue = Promise.resolve();
     this._updateQueued = false;
 
-    this._pre = (
+    this._children = [
+      this._highlights = <div class="preso-code__highlights" />,
       <pre>
         {this._code = <code class="hljs" />}
       </pre>
-    );
+    ];
   }
   async connectedCallback() {
     if (!this.closest('preso-slide')) throw Error("preso-code must be within a preso-slide");
@@ -44,7 +44,7 @@ export default class Code extends HTMLElement {
       this.textContent = this.textContent;
       this.innerHTML = '';
     }
-    this.append(this._pre);
+    this.append(...this._children);
     this._queueUpdate();
   }
   attributeChangedCallback(name, oldVal, newVal) {
@@ -54,12 +54,6 @@ export default class Code extends HTMLElement {
     }
     if (this._hasBeenConnected) this._queueUpdate();
   }
-  set textContent(val) {
-    this._content = Promise.resolve(normalizeIndent(val));
-  }
-  get textContent() {
-    return super.textContent;
-  }
   _synchronize() {
     const slide = this.closest('preso-slide');
     slide.synchronize(this._content);
@@ -67,11 +61,9 @@ export default class Code extends HTMLElement {
   _queueUpdate() {
     if (this._updateQueued) return;
     this._updateQueued = true;
-
-    // Wait a frame to allow multiple attributes to be set
-    this._queue = this._queue.then(async () => {
-      const slide = this.closest('preso-slide');
-      await slide.synchronize();
+    
+    const slide = this.closest('preso-slide');
+    slide.synchronize().then(() => {
       this._updateQueued = false;
       this._update();
     });
@@ -101,7 +93,7 @@ export default class Code extends HTMLElement {
     if (this.textContent.startsWith(content)) {
       const range = findText(content, {root: this});
 
-      const {height} = getRangeDimensions(range);
+      const { height } = getRelativeBoundingClientRect(document.documentElement, range);
       this.style.height = height + 'px';
     }
     else {
@@ -128,6 +120,39 @@ export default class Code extends HTMLElement {
   show(start, end) {
     this.start = start;
     this.end = end;
+  }
+  set textContent(val) {
+    this._content = Promise.resolve(normalizeIndent(val));
+  }
+  get textContent() {
+    return super.textContent;
+  }
+  highlight(range) {
+    const div = <div class="preso-code__highlight" />;
+    const slide = this.closest('preso-slide');
+
+    this._highlights.append(div);
+
+    slide.synchronize().then(() => {
+      const rect = getRelativeBoundingClientRect(this, range);
+
+      Object.assign(div.style, {
+        width: rect.width + 'px',
+        height: rect.height + 'px',
+        top: rect.top + 'px',
+        left: rect.left + 'px'
+      });
+
+      div.animate([
+        { transform: 'scaleX(0)' },
+        { transform: '' }
+      ], {
+        duration: 300,
+        easing: easeOutQuint
+      })
+    });
+    
+    return div;
   }
 }
 
