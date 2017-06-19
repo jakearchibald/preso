@@ -24,4 +24,9 @@ preso-code {
     position: absolute;
     background: #fff;
   }
+  &__char {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+  }
 }

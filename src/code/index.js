@@ -121,24 +121,81 @@ export default class Code extends HTMLElement {
     this.start = start;
     this.end = end;
   }
+  async _animateChars(range) {
+    const slide = this.closest('preso-slide');
+
+    await slide.synchronize();
+
+    // Convert string to range
+    if (typeof range == 'string') {
+      range = findText(range, { root: this._code });
+    }
+
+    const root = range.commonAncestorContainer;
+    const ittr = document.createNodeIterator(root, NodeFilter.SHOW_TEXT);
+    const textNodes = [];
+    const toAnimate = [];
+
+    // Gathering the nodes first to avoid weird bugs where
+    // stuff's changing as edits are made.
+    while (true) {
+      const textNode = ittr.nextNode();
+      if (!textNode) break;
+      if (range.intersectsNode(textNode)) {
+        textNodes.push(textNode);
+      }
+    }
+
+    for (const textNode of textNodes) {
+      const text = textNode.nodeValue;
+      const replacement = document.createDocumentFragment();
+
+      let i = 0;
+      let end = text.length;
+
+      if (range.startContainer == textNode) {
+        replacement.append(text.slice(0, range.startOffset));
+        i = range.startOffset;
+      }
+
+      if (range.endContainer == textNode) {
+        end = range.endOffset;
+      }
+
+      for (; i < end; i++) {
+        const span = <span class="preso-code__char">{text[i]}</span>;
+        toAnimate.push(span);
+        replacement.append(span);
+      }
+
+      if (range.endContainer == textNode) {
+        replacement.append(text.slice(range.endOffset));
+      }
+
+      textNode.replaceWith(replacement);
+    }
+
+    return toAnimate;
+  }
   set textContent(val) {
     this._content = Promise.resolve(normalizeIndent(val));
+    this._queueUpdate();
   }
   get textContent() {
     return super.textContent;
   }
   highlight(range) {
-    // Convert string to range
-    if (typeof range == 'string') {
-      range = findText(range, {root: this._code});
-    }
-
     const div = <div class="preso-code__highlight" />;
     const slide = this.closest('preso-slide');
 
     this._highlights.append(div);
 
     slide.synchronize().then(() => {
+      // Convert string to range
+      if (typeof range == 'string') {
+        range = findText(range, {root: this._code});
+      }
+
       const rect = getRelativeBoundingClientRect(this, range);
 
       Object.assign(div.style, {
@@ -158,6 +215,46 @@ export default class Code extends HTMLElement {
     });
     
     return div;
+  }
+  async backspace(range) {
+    const els = await this._animateChars(range);
+    const slide = this.closest('preso-slide');
+
+    return Promise.all(
+      els.reverse().map((el, i) => {
+        return el.animate([
+          { width: window.getComputedStyle(el).width },
+          { width: '0' }
+        ], {
+          duration: 0,
+          fill: 'forwards',
+          delay: 70 * i * slide.transition
+        }).finished;
+      })
+    );
+  }
+  async type(range) {
+    const els = await this._animateChars(range);
+    const slide = this.closest('preso-slide');
+
+    let delay = 0;
+
+    Promise.all(
+      els.map(el => {
+        const anim = el.animate([
+          { width: 0 },
+          { width: window.getComputedStyle(el).width }
+        ], {
+          duration: 0,
+          fill: 'backwards',
+          delay: delay * slide.transition
+        });
+
+        delay += Math.pow(Math.random(), 2) * 150 + 20;
+
+        return anim.finished;
+      })
+    );
   }
 }
 
