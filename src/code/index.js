@@ -128,6 +128,11 @@ export default class Code extends HTMLElement {
     return super.textContent;
   }
   highlight(range) {
+    // Convert string to range
+    if (typeof range == 'string') {
+      range = findText(range, {root: this._code});
+    }
+
     const div = <div class="preso-code__highlight" />;
     const slide = this.closest('preso-slide');
 
