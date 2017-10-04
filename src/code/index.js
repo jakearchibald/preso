@@ -1,5 +1,5 @@
-/** @jsx h */
-import { h, findText, getRelativeBoundingClientRect } from '../utils/dom.js';
+import html from 'hyperhtml';
+import { findText, getRelativeBoundingClientRect } from '../utils/dom.js';
 import { easeOutQuad, easeOutQuint } from '../utils/css-ease.js';
 import css from './style.scss';
 import hljs from 'highlight.js/lib/highlight.js';
@@ -7,7 +7,7 @@ import js from 'highlight.js/lib/languages/javascript.js';
 
 hljs.registerLanguage('javascript', js);
 
-document.head.append(<style>{css}</style>);
+document.head.append(html`<style>${css}</style>`);
 
 function normalizeIndent(str) {
   // trim empty lines from start & end
@@ -26,10 +26,8 @@ export default class Code extends HTMLElement {
     this._updateQueued = false;
 
     this._children = [
-      this._highlights = <div class="preso-code__highlights" />,
-      <pre>
-        {this._code = <code class="hljs" />}
-      </pre>
+      this._highlights = html`<div class="preso-code__highlights"></div>`,
+      html`<pre>${this._code = html`<code class="hljs"></code>`}</pre>`
     ];
   }
   async connectedCallback() {
@@ -61,7 +59,7 @@ export default class Code extends HTMLElement {
   _queueUpdate() {
     if (this._updateQueued) return;
     this._updateQueued = true;
-    
+
     const slide = this.closest('preso-slide');
     slide.synchronize().then(() => {
       this._updateQueued = false;
@@ -104,7 +102,7 @@ export default class Code extends HTMLElement {
 
     // Transition
     const slide = this.closest('preso-slide');
-    
+
     if (!slide.transition) return;
 
     const endHeight = window.getComputedStyle(this).height;
@@ -163,7 +161,7 @@ export default class Code extends HTMLElement {
       }
 
       for (; i < end; i++) {
-        const span = <span class="preso-code__char">{text[i]}</span>;
+        const span = html`<span class="preso-code__char">${text[i]}</span>`;
         toAnimate.push(span);
         replacement.append(span);
       }
@@ -185,7 +183,7 @@ export default class Code extends HTMLElement {
     return super.textContent;
   }
   highlight(range) {
-    const div = <div class="preso-code__highlight" />;
+    const div = html`<div class="preso-code__highlight"></div>`;
     const slide = this.closest('preso-slide');
 
     this._highlights.append(div);
@@ -213,7 +211,7 @@ export default class Code extends HTMLElement {
         easing: easeOutQuint
       })
     });
-    
+
     return div;
   }
   async backspace(range) {

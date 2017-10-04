@@ -1,9 +1,9 @@
-/** @jsx h */
-import { h, frame } from '../../utils/dom.js';
+import html from 'hyperhtml';
+import { frame } from '../../utils/dom.js';
 import { animWatcher } from '../../utils/anims';
 import css from './style.scss';
 
-document.head.append(<style>{css}</style>);
+document.head.append(html`<style>${css}</style>`);
 
 export default class Slide extends HTMLElement {
   constructor() {
@@ -26,13 +26,13 @@ export default class Slide extends HTMLElement {
   }={}) {
     this.transition = !preventTransition;
     this._autoAdvanceNum = autoAdvanceNum;
-    
+
     const slideDone = func(this);
-    
+
     await slideDone;
     this._complete = true;
   }
-  
+
   _advance({
     preventTransition = false
   }={}) {
@@ -57,15 +57,13 @@ export default class Slide extends HTMLElement {
   }
 
   async synchronize(promise = undefined) {
-    const synchronizePromises = this._synchronizePromises;
-    
     if (promise) {
       const caughtPromise = promise.catch(err => {
         // Don't rethrow the error, just log
         console.error('synchronize promise rejected', err);
-      }); 
-      
-      synchronizePromises.push(caughtPromise);
+      });
+
+      this._synchronizePromises.push(caughtPromise);
     }
 
     await frame();

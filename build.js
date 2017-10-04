@@ -17,12 +17,6 @@ const argv = require('minimist')(process.argv.slice(2), {
 
 const rollupPlugins = [
   sass({options: {outputStyle: 'compressed'}}),
-  babel({
-    exclude: 'node_modules/**',
-    plugins: [
-      ["transform-react-jsx"]
-    ]
-  }),
   resolve({ jsnext: true, main: true }),
   commonjs()
 ];

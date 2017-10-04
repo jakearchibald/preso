@@ -1,22 +1,21 @@
-/** @jsx h */
-import { h } from '../../utils/dom.js';
+import html from 'hyperhtml';
 import css from './style.scss';
 
 export default class Notes extends HTMLElement {
   constructor() {
     super();
     this._hasBeenConnected = false;
-    this._notesList = <ol class="preso-notes-list"/>;
-    this._slideList = <ol class="preso-slide-list"/>;
-    this._controls = (
+    this._notesList = html`<ol class="preso-notes-list"></ol>`;
+    this._slideList = html`<ol class="preso-slide-list"></ol>`;
+    this._controls = html`
       <div class="preso-notes__controls">
-        {this._time = <div class="preso-notes-time"/>}
+        ${this._time = html`<div class="preso-notes-time"></div>`}
         <div class="preso-notes__buttons">
-          {this._slidesListBtn = <button class="preso-notes__button"><span>Toggle slide list</span><svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z" /></svg></button>}
-          {this._popOutBtn = <button class="preso-notes__button preso-notes__popout-button"><span>Pop-out</span><svg viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5C4 3 3 4 3 5v14c0 1 1 2 2 2h14c1 0 2-1 2-2v-7h-2v7zM14 3v2h3.6l-9.8 9.8 1.4 1.4L19 6.4V10h2V3h-7z" /></svg></button>}
+          ${this._slidesListBtn = html`<button class="preso-notes__button"><span>Toggle slide list</span><svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z" /></svg></button>`}
+          ${this._popOutBtn = html`<button class="preso-notes__button preso-notes__popout-button"><span>Pop-out</span><svg viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5C4 3 3 4 3 5v14c0 1 1 2 2 2h14c1 0 2-1 2-2v-7h-2v7zM14 3v2h3.6l-9.8 9.8 1.4 1.4L19 6.4V10h2V3h-7z" /></svg></button>`}
         </div>
       </div>
-    );
+    `;
     this._timeFormat = new Intl.DateTimeFormat('lookup', {
       timeZone: 'UTC',
       hour: 'numeric', minute: 'numeric', second: 'numeric'
@@ -37,15 +36,15 @@ export default class Notes extends HTMLElement {
     if (this._hasBeenConnected) return;
     this._hasBeenConnected = true;
 
-    this.append(
-      // Adding the CSS to the element so it works when moved into its own iframe
-      <style>{css}</style>,
+    // Adding the CSS to the element so it works when moved into its own iframe
+    this.append(...html`
+      <style>${css}</style>
       <div class="preso-notes-view">
-        {this._slideList}
-        {this._notesList}
-        {this._controls}
+        ${this._slideList}
+        ${this._notesList}
+        ${this._controls}
       </div>
-    );
+    `);
   }
   _onPopOutClick() {
     this.dispatchEvent(new CustomEvent('popoutclick'));
@@ -65,7 +64,7 @@ export default class Notes extends HTMLElement {
       notes = notes.trim().split('\n');
     }
     this._notesList.innerHTML = '';
-    this._notesList.append(...notes.map(s => <li class="preso-notes-list__item">{s}</li>));
+    this._notesList.append(...notes.map(s => html`<li class="preso-notes-list__item">${s}</li>`));
   }
   _updateTimer() {
     this._time.textContent = this._timeFormat.format(Date.now() - this._timerStart);
@@ -79,11 +78,11 @@ export default class Notes extends HTMLElement {
   }
   _addSlideReference(name) {
     const slideIndex = this._slideList.children.length;
-    this._slideList.append(
+    this._slideList.append(html`
       <li class="preso-slide-list__item">
-        <button data-slide-index={slideIndex} class="preso-slide-list__button">{name}</button>
+        <button data-slide-index=${slideIndex} class="preso-slide-list__button">${name}</button>
       </li>
-    );
+    `);
   }
 }
 

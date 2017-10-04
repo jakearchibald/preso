@@ -1,6 +1,7 @@
-/** @jsx h */
+import html from 'hyperhtml';
+
 import './notes/index.js';
-import {h, createDetectableWindow, detectableWindowExists} from '../utils/dom.js';
+import {createDetectableWindow, detectableWindowExists} from '../utils/dom.js';
 import Slide from './slide/index.js';
 import {fade, fadeBlank} from './transitions/index.js';
 import css from './style.scss';
@@ -17,21 +18,21 @@ export default class Presentation extends HTMLElement {
     this._slideFuncs = [];
     this._transitionFuncs = [];
     // Appended in connectedCallback
-    this._stage = <div class="preso__stage"></div>;
-    this.notes = <preso-notes></preso-notes>;
+    this._stage = html`<div class="preso__stage"></div>`;
+    this.notes = html`<preso-notes></preso-notes>`;
     this._notesWindow = null;
 
     // Add shadow dom
     let resizeObserver;
 
     this.attachShadow({mode: 'closed'}).append(
-      this._shadowStyle = <style>{css}</style>,
-      <div class="preso__layout">
-        {this._stageCell = <div class="preso__cell"/>}
-        {this._notesCell = <div class="preso__cell"/>}
-        {resizeObserver = <iframe class="preso__resize-observer"></iframe>}
-      </div>,
-      <slot/>
+      this._shadowStyle = html`<style>${css}</style>`,
+      html`<div class="preso__layout">
+        ${this._stageCell = html`<div class="preso__cell"></div>`}
+        ${this._notesCell = html`<div class="preso__cell"></div>`}
+        ${resizeObserver = html`<iframe class="preso__resize-observer"></iframe>`}
+      </div>`,
+      html`<slot></slot>`
     );
 
     // Watch for element size changes

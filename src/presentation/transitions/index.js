@@ -1,5 +1,3 @@
-/** @jsx h */
-import { h } from '../../utils/dom.js';
 import { easeInOutQuad } from '../../utils/css-ease.js';
 
 export function fade({
@@ -7,7 +5,7 @@ export function fade({
   easing = easeInOutQuad
 }={}) {
   return async function(slide) {
-    await slide.currentSynchronized();
+    await slide.synchronize();
 
     const anim = slide.animate([
       {opacity: 0},
@@ -28,7 +26,7 @@ export function fadeBlank({
   color = 'black'
 }={}) {
   return async function(slide, exitingSlide, stage) {
-    const blank = <div/>;
+    const blank = document.createElement('div');
 
     Object.assign(blank.style, {
       position: 'absolute',
@@ -40,28 +38,16 @@ export function fadeBlank({
       backgroundColor: color
     });
 
-    const fadeInAnim = blank.animate([
-      {opacity: 0},
-      {opacity: 1},
+    stage.append(blank);
+
+    await slide.synchronize(blank.animate([
+      { opacity: 0 },
+      { opacity: 1 },
     ], {
       duration,
       easing,
       fill: 'forwards'
-    });
-
-    fadeInAnim.pause();
-
-    stage.append(blank);
-
-    const slideReady = await slide.currentSynchronized();
-
-    slide.synchronize(fadeInAnim.finished);
-
-    await slideReady;
-
-    fadeInAnim.play();
-
-    await fadeInAnim.finished;
+    }).finished);
 
     slide.style.opacity = 1;
 
@@ -75,5 +61,12 @@ export function fadeBlank({
     }).finished;
 
     blank.remove();
+  }
+}
+
+export function swap() {
+  return async function(slide) {
+    await slide.synchronize();
+    slide.style.opacity = 1;
   }
 }

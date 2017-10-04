@@ -1,46 +1,10 @@
-const svgNs = 'http://www.w3.org/2000/svg';
-const svgTagNames = new Set();
-
-/**
- * @returns HTMLElement
- */
-export function h(tagName, attributes, ...children) {
-  let el;
-
-  if (svgTagNames.has(tagName)) {
-    el = document.createElementNS(svgNs, tagName);
-  }
-  else {
-    el = document.createElement(tagName);
-
-    if (el.constructor == HTMLUnknownElement && !tagName.includes('-')) {
-      // Try SVG instead? This is really hacky.
-      // TODO: find a better way.
-      const svgEl = document.createElementNS(svgNs, tagName);
-
-      if (svgEl.constructor !== SVGElement) { // Appears to be for unknown elements
-        el = svgEl;
-        svgTagNames.add(tagName);
-      }
-    }
-  }
-
-  if (attributes) for (const [name, val] of Object.entries(attributes)) {
-    if (val !== false) el.setAttribute(name, val);
-  }
-
-  el.append(...children);
-
-  return el;
-}
-
 /**
  * @returns Range
  */
 export function findText(str, opts={}) {
   const {index = 0} = opts;
   let i = 0;
-  
+
   for (const range of findTexts(str, opts)) {
     if (i === index) return range;
     i++;
@@ -62,15 +26,15 @@ export function* findTexts(str, {
   let startContainer = null;
   let rewindCount = 0;
   let startOffset = 0;
-  
+
   const ittr = document.createNodeIterator(root, NodeFilter.SHOW_TEXT);
-  
+
   while (true) {
     let textNode = ittr.nextNode();
     if (!textNode) return;
-    
+
     let text = textNode.nodeValue;
-    
+
     // This lets us rewind if we don't find a match
     if (matchPos) rewindCount++;
 
@@ -178,10 +142,10 @@ export function getCompoundTransform(element) {
 
 function rectToQuad(rect) {
   return DOMQuad.fromRect({
-    x: ('x' in rect) ? rect.x : rect.left, 
+    x: ('x' in rect) ? rect.x : rect.left,
     y: ('y' in rect) ? rect.y : rect.top,
     width: rect.width,
-    height: rect.height 
+    height: rect.height
   });
 }
 

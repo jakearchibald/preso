@@ -1,14 +1,13 @@
-/** @jsx h */
-import { h } from '../utils/dom.js';
+import html from 'hyperhtml'
 import css from './style.scss';
 
-document.head.append(<style>{css}</style>);
+document.head.append(html`<style>${css}</style>`);
 
 export default class Img extends HTMLElement {
   constructor() {
     super();
     this._hasBeenConnected = false;
-    this._img = <img class="preso-img__img"/>;
+    this._img = html`<img class="preso-img__img">`;
 
     this._imgReady = new Promise((resolve, reject) => {
       this._img.addEventListener('load', () => resolve());
@@ -22,11 +21,11 @@ export default class Img extends HTMLElement {
     const slide = this.closest('preso-slide');
 
     if (!slide) throw Error("preso-img must be within a preso-slide");
-    
+
     this.append(this._img);
-    
+
     await slide.synchronize(this._imgReady);
-    
+
     this.classList.add('preso-img--show');
   }
   attributeChangedCallback(name, oldVal, newVal) {
