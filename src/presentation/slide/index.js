@@ -68,7 +68,7 @@ export default class Slide extends HTMLElement {
 
     await frame();
 
-    return Promise.all(synchronizePromises);
+    return Promise.all(this._synchronizePromises);
   }
 
   currentSynchronized() {
