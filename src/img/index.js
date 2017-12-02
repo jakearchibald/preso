@@ -8,11 +8,6 @@ export default class Img extends HTMLElement {
     super();
     this._hasBeenConnected = false;
     this._img = html`<img class="preso-img__img">`;
-
-    this._imgReady = new Promise((resolve, reject) => {
-      this._img.addEventListener('load', () => resolve());
-      this._img.addEventListener('error', () => reject(Error('Image load failed')));
-    });
   }
   async connectedCallback() {
     if (this._hasBeenConnected) return;
@@ -24,7 +19,7 @@ export default class Img extends HTMLElement {
 
     this.append(this._img);
 
-    await slide.synchronize(this._imgReady);
+    await slide.synchronize(this._img.decode());
 
     this.classList.add('preso-img--show');
   }
