@@ -2,7 +2,7 @@
   background: #000;
   overflow: hidden;
   position: relative;
-  
+
   &:focus {
     outline: none;
   }
@@ -36,6 +36,7 @@
 ::slotted(.preso__stage) {
   position: absolute;
   transform-origin: 0 0;
+  overflow: hidden;
 }
 
 ::slotted(preso-notes) {
