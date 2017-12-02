@@ -64,6 +64,35 @@ export function fadeBlank({
   }
 }
 
+function slideFrom(direction, {
+  duration = 800,
+  easing = easeInOutQuad
+}={}) {
+  return async function(slide, exitingSlide, stage) {
+    await slide.synchronize();
+
+    slide.style.opacity = 1;
+
+    slide.animate([
+      { transform: `translateX(${direction == 'right' ? 100 : -100}%)` },
+      { transform: 'none' },
+    ], { duration, easing });
+
+    await exitingSlide.animate([
+      { transform: 'none' },
+      { transform: `translateX(${direction == 'right' ? -100 : 100}%)` }
+    ], { duration, easing }).finished;
+  }
+}
+
+export function slideFromRight(opts) {
+  return slideFrom('right', opts);
+}
+
+export function slideFromLeft(opts) {
+  return slideFrom('left', opts);
+}
+
 export function swap() {
   return async function(slide) {
     await slide.synchronize();
