@@ -181,6 +181,12 @@ export default class Presentation extends HTMLElement {
     this._transitionFuncs[this._transitionFuncs.length - 1] = transitionFunc;
   }
 
+  async startHere() {
+    const num = this._slideFuncs.length;
+    await null; // microtask
+    this.goTo(num, {preventTransition: true});
+  }
+
   async goTo(num, {
     state = 0,
     preventTransition = false,
@@ -191,7 +197,7 @@ export default class Presentation extends HTMLElement {
     const func = this._slideFuncs[num];
 
     this._currentSlide = slide;
-    this._currentSlideNum = num;
+    this._currentSlideNum = Number(num);
 
     slide.style.opacity = 0;
     this._stage.append(slide);

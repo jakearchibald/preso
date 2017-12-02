@@ -51,7 +51,7 @@ export default class Notes extends HTMLElement {
   }
   _onSlideListClick(btn) {
     this.dispatchEvent(new CustomEvent('slideswitch', {
-      detail: {slideIndex: btn.dataset.slideIndex}
+      detail: {slideIndex: Number(btn.dataset.slideIndex)}
     }));
   }
   _toggleListView() {
