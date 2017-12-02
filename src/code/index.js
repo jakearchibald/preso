@@ -4,8 +4,10 @@ import { easeOutQuad, easeOutQuint } from '../utils/css-ease.js';
 import css from './style.scss';
 import hljs from 'highlight.js/lib/highlight.js';
 import js from 'highlight.js/lib/languages/javascript.js';
+import xml from 'highlight.js/lib/languages/xml.js';
 
 hljs.registerLanguage('javascript', js);
+hljs.registerLanguage('xml', xml);
 
 document.head.append(html`<style>${css}</style>`);
 
@@ -89,14 +91,20 @@ export default class Code extends HTMLElement {
     // Are we just hiding existing code?
     // TODO: this shouldn't happen if lang has changed
     if (this.textContent.startsWith(content)) {
-      const range = findText(content, {root: this});
+      const oldContent = this._code.innerHTML;
+      this._code.textContent = content;
 
-      const { height } = getRelativeBoundingClientRect(document.documentElement, range);
-      this.style.height = height + 'px';
+      this.style.height = window.getComputedStyle(this).height;
+      this._code.innerHTML = oldContent;
     }
     else {
-      const result = hljs.highlight(lang, content);
-      this._code.innerHTML = result.value;
+      if (lang == 'plain') {
+        this._code.textContent = content;
+      }
+      else {
+        const { value } = hljs.highlight(lang, content);
+        this._code.innerHTML = value;
+      }
       this.style.height = '';
     }
 
@@ -237,7 +245,7 @@ export default class Code extends HTMLElement {
 
     let delay = 0;
 
-    Promise.all(
+    await Promise.all(
       els.map(el => {
         const anim = el.animate([
           { width: 0 },
