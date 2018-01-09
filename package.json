@@ -24,6 +24,6 @@
   "dependencies": {
     "gsap": "^1.19.1",
     "highlight.js": "^9.12.0",
-    "hyperhtml": "^1.11.1"
+    "hyperhtml": "^2.4.3"
   }
 }

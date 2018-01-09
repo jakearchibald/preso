@@ -1,4 +1,4 @@
-import html from 'hyperhtml';
+import html from 'hyperhtml/esm';
 
 import './notes/index.js';
 import {createDetectableWindow, detectableWindowExists} from '../utils/dom.js';

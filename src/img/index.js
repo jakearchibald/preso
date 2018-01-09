@@ -1,4 +1,4 @@
-import html from 'hyperhtml'
+import html from 'hyperhtml/esm';
 import css from './style.scss';
 
 document.head.append(html`<style>${css}</style>`);

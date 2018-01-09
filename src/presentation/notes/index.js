@@ -1,4 +1,4 @@
-import html from 'hyperhtml';
+import html from 'hyperhtml/esm';
 import css from './style.scss';
 
 export default class Notes extends HTMLElement {
@@ -35,7 +35,6 @@ export default class Notes extends HTMLElement {
   connectedCallback() {
     if (this._hasBeenConnected) return;
     this._hasBeenConnected = true;
-
     // Adding the CSS to the element so it works when moved into its own iframe
     this.append(...html`
       <style>${css}</style>
@@ -44,7 +43,7 @@ export default class Notes extends HTMLElement {
         ${this._notesList}
         ${this._controls}
       </div>
-    `);
+    `.childNodes);
   }
   _onPopOutClick() {
     this.dispatchEvent(new CustomEvent('popoutclick'));

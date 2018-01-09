@@ -1,4 +1,4 @@
-import html from 'hyperhtml';
+import html from 'hyperhtml/esm';
 import { frame } from '../../utils/dom.js';
 import { animWatcher } from '../../utils/anims';
 import css from './style.scss';

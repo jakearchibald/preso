@@ -1,10 +1,11 @@
-import html from 'hyperhtml';
-import { findText, getRelativeBoundingClientRect } from '../utils/dom.js';
+import html from 'hyperhtml/esm';
+import { findText, getRelativeBoundingClientRect, frame } from '../utils/dom.js';
 import { easeOutQuad, easeOutQuint } from '../utils/css-ease.js';
 import css from './style.scss';
 import hljs from 'highlight.js/lib/highlight.js';
 import js from 'highlight.js/lib/languages/javascript.js';
 import xml from 'highlight.js/lib/languages/xml.js';
+import SlideElement from '../slide-element';
 
 hljs.registerLanguage('javascript', js);
 hljs.registerLanguage('xml', xml);
@@ -20,10 +21,9 @@ function normalizeIndent(str) {
   return lines.map(l => l.slice(indentLen)).join('\n');
 }
 
-export default class Code extends HTMLElement {
+export default class Code extends SlideElement {
   constructor() {
     super();
-    this._hasBeenConnected = false;
     this._content = Promise.resolve('');
     this._updateQueued = false;
 
@@ -32,13 +32,7 @@ export default class Code extends HTMLElement {
       html`<pre>${this._code = html`<code class="hljs"></code>`}</pre>`
     ];
   }
-  async connectedCallback() {
-    if (!this.closest('preso-slide')) throw Error("preso-code must be within a preso-slide");
-
-    if (this._hasBeenConnected) return;
-    this._hasBeenConnected = true;
-    this._synchronize();
-
+  async firstConnected() {
     if (this.textContent.trim()) {
       // Runs the setter specified below
       this.textContent = this.textContent;
@@ -50,23 +44,20 @@ export default class Code extends HTMLElement {
   attributeChangedCallback(name, oldVal, newVal) {
     if (name == 'src') {
       this._content = fetch(newVal).then(r => r.text());
-      if (this._hasBeenConnected) this._synchronize();
     }
     if (this._hasBeenConnected) this._queueUpdate();
-  }
-  _synchronize() {
-    const slide = this.closest('preso-slide');
-    slide.synchronize(this._content);
   }
   _queueUpdate() {
     if (this._updateQueued) return;
     this._updateQueued = true;
 
     const slide = this.closest('preso-slide');
-    slide.synchronize().then(() => {
+    slide.synchronize((async () => {
+      // allow multiple attrs to be changed
+      await frame();
       this._updateQueued = false;
-      this._update();
-    });
+      await this._update();
+    })());
   }
   async _update() {
     // Figure out language
@@ -105,23 +96,29 @@ export default class Code extends HTMLElement {
         const { value } = hljs.highlight(lang, content);
         this._code.innerHTML = value;
       }
-      this.style.height = '';
     }
 
     // Transition
     const slide = this.closest('preso-slide');
 
-    if (!slide.transition) return;
+    if (!slide.transition) {
+      this.style.height = 'auto';
+      return;
+    }
 
-    const endHeight = window.getComputedStyle(this).height;
+    slide.synchronize().then(() => {
+      this.style.height = 'auto';
+      const endHeight = window.getComputedStyle(this).height;
 
-    await this.animate([
-      {height: startHeight},
-      {height: endHeight}
-    ], {
-      duration: 300,
-      easing: easeOutQuad
-    }).finished;
+      this.animate([
+        {height: startHeight},
+        {height: endHeight}
+      ], {
+        duration: 300,
+        easing: easeOutQuad
+      }).finished;
+    });
+
   }
   show(start, end) {
     this.start = start;
