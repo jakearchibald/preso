@@ -24,6 +24,10 @@ preso-code {
   &__highlight {
     position: absolute;
     background: #fff;
+
+    // 5px padding around the highlight
+    padding: 10px;
+    margin: -10px 0 0 -10px;
   }
   &__char {
     display: inline-block;

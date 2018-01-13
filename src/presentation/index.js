@@ -5,6 +5,7 @@ import {createDetectableWindow, detectableWindowExists} from '../utils/dom.js';
 import Slide from './slide/index.js';
 import {fade, fadeBlank} from './transitions/index.js';
 import css from './style.scss';
+import { swap } from '../../dist/presentation/transitions';
 
 export default class Presentation extends HTMLElement {
   constructor() {
@@ -184,7 +185,7 @@ export default class Presentation extends HTMLElement {
   async startHere() {
     const num = this._slideFuncs.length;
     await null; // microtask
-    this.goTo(num, {preventTransition: true});
+    this.goTo(num, { transition: swap() });
   }
 
   async goTo(num, {

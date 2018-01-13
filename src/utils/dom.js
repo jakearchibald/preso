@@ -125,6 +125,11 @@ export function frame() {
   return new Promise(r => requestAnimationFrame(r));
 }
 
+export async function wait(ms) {
+  await new Promise(r => setTimeout(r, ms));
+  await frame();
+}
+
 export function getCompoundTransform(element) {
   const chain = [];
 

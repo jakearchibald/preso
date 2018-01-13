@@ -1,6 +1,6 @@
 import html from 'hyperhtml/esm';
 
-export default class SlideElement extends HTMLElement {
+export default class SlideItem extends HTMLElement {
   constructor() {
     super();
     this._hasBeenConnected = false;

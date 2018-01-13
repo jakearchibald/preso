@@ -5,7 +5,7 @@ import css from './style.scss';
 import hljs from 'highlight.js/lib/highlight.js';
 import js from 'highlight.js/lib/languages/javascript.js';
 import xml from 'highlight.js/lib/languages/xml.js';
-import SlideElement from '../slide-element';
+import SlideItem from '../slide-item';
 
 hljs.registerLanguage('javascript', js);
 hljs.registerLanguage('xml', xml);
@@ -21,7 +21,7 @@ function normalizeIndent(str) {
   return lines.map(l => l.slice(indentLen)).join('\n');
 }
 
-export default class Code extends SlideElement {
+export default class Code extends SlideItem {
   constructor() {
     super();
     this._content = Promise.resolve('');
@@ -77,6 +77,7 @@ export default class Code extends SlideElement {
     // Start begins at 1, so deduct 1
     const content = lines.slice(start - 1, end).join('\n');
     const startHeight = window.getComputedStyle(this).height;
+    let endHeight;
 
     // Set code
     // Are we just hiding existing code?
@@ -85,7 +86,8 @@ export default class Code extends SlideElement {
       const oldContent = this._code.innerHTML;
       this._code.textContent = content;
 
-      this.style.height = window.getComputedStyle(this).height;
+      this.style.height = 'auto';
+      endHeight = window.getComputedStyle(this).height;
       this._code.innerHTML = oldContent;
     }
     else {
@@ -96,6 +98,10 @@ export default class Code extends SlideElement {
         const { value } = hljs.highlight(lang, content);
         this._code.innerHTML = value;
       }
+
+      this.style.height = 'auto';
+      endHeight = window.getComputedStyle(this).height;
+      this.style.height = startHeight;
     }
 
     // Transition
@@ -107,8 +113,7 @@ export default class Code extends SlideElement {
     }
 
     slide.synchronize().then(() => {
-      this.style.height = 'auto';
-      const endHeight = window.getComputedStyle(this).height;
+      this.style.height = endHeight;
 
       this.animate([
         {height: startHeight},
