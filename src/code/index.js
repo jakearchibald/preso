@@ -52,6 +52,7 @@ export default class Code extends SlideItem {
     this._updateQueued = true;
 
     const slide = this.closest('preso-slide');
+
     slide.synchronize((async () => {
       // allow multiple attrs to be changed
       await frame();
@@ -217,7 +218,7 @@ export default class Code extends SlideItem {
         { transform: 'scaleX(0)' },
         { transform: '' }
       ], {
-        duration: 300,
+        duration: 300 * slide.transition,
         easing: easeOutQuint
       })
     });

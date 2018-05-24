@@ -16,9 +16,10 @@ export default class Notes extends HTMLElement {
         </div>
       </div>
     `;
-    this._timeFormat = new Intl.DateTimeFormat('lookup', {
+    this._timeFormat = new Intl.DateTimeFormat('en-gb', {
       timeZone: 'UTC',
-      hour: 'numeric', minute: 'numeric', second: 'numeric'
+      hour: 'numeric', minute: 'numeric', second: 'numeric',
+      hour12: false
     });
     this._timerStart = 0;
     this._showingListView = false;

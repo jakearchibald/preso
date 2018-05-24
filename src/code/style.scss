@@ -1,19 +1,23 @@
 @import '../../node_modules/highlight.js/styles/monokai-sublime';
 
 preso-code {
-  overflow: hidden;
   display: block;
   position: relative;
   height: 0;
 
   & pre {
+    max-height: 100%;
+    overflow: hidden;
     margin: 0;
     position: relative;
+    // Else you see font changes during highlight animations
+    will-change: transform;
   }
 
   & .hljs {
     padding: 0;
     background: none;
+    font-family: Menlo, Monaco, 'Courier New', monospace;
   }
 }
 

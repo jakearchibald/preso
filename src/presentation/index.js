@@ -107,6 +107,11 @@ export default class Presentation extends HTMLElement {
         this.notes.style.height = `${this.notesHeight}px`;
         this._handleResize();
         break;
+      case 'no-notes':
+        if (newVal !== null) {
+          this._notesCell.remove();
+        }
+        break;
     }
   }
 
@@ -254,12 +259,15 @@ export default class Presentation extends HTMLElement {
   }
 }
 
+const numberAttrs = ['width', 'height', 'notes-width', 'notes-height'];
+const boolAttrs = ['no-notes'];
+
 Presentation.observedAttributes = [
-  'width', 'height', 'notes-width', 'notes-height'
+  ...numberAttrs, ...boolAttrs
 ];
 
 // Property accessors for attributes
-for (const attr of Presentation.observedAttributes) {
+for (const attr of numberAttrs) {
   const prop = attr.replace(/-\w/g, match => match.slice(1).toUpperCase());
 
   Object.defineProperty(Presentation.prototype, prop, {
@@ -273,6 +281,24 @@ for (const attr of Presentation.observedAttributes) {
     },
     set(val) {
       this.setAttribute(attr, Number(val));
+    }
+  });
+}
+
+for (const attr of boolAttrs) {
+  const prop = attr.replace(/-\w/g, match => match.slice(1).toUpperCase());
+
+  Object.defineProperty(Presentation.prototype, prop, {
+    get() {
+      return this.hasAttribute('no-notes');
+    },
+    set(val) {
+      if (val) {
+        this.setAttribute('no-notes', '');
+      }
+      else {
+        this.removeAttribute('no-notes');
+      }
     }
   });
 }

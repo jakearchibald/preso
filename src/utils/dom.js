@@ -117,7 +117,7 @@ export function detectableWindowExists(name) {
       resolve(false);
       localStorage.setItem(localStorageKeyPrefix + name, 'no');
       window.removeEventListener('storage', listener);
-    }, 100);
+    }, 200);
   });
 }
 
