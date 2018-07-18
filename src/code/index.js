@@ -1,5 +1,5 @@
 import html from 'hyperhtml/esm';
-import { findText, getRelativeBoundingClientRect, frame } from '../utils/dom.js';
+import { findText, getRelativeBoundingClientRect, frame, wait } from '../utils/dom.js';
 import { easeOutQuad, easeOutQuint } from '../utils/css-ease.js';
 import css from './style.scss';
 import hljs from 'highlight.js/lib/highlight.js';
@@ -122,7 +122,7 @@ export default class Code extends SlideItem {
       ], {
         duration: 300,
         easing: easeOutQuad
-      }).finished;
+      });
     });
 
   }
@@ -229,41 +229,30 @@ export default class Code extends SlideItem {
     const els = await this._animateChars(range);
     const slide = this.closest('preso-slide');
 
-    return Promise.all(
-      els.reverse().map((el, i) => {
-        return el.animate([
-          { width: window.getComputedStyle(el).width },
-          { width: '0' }
-        ], {
-          duration: 0,
-          fill: 'forwards',
-          delay: 70 * i * slide.transition
-        }).finished;
-      })
-    );
+    for (const [i, el] of els.reverse().entries()) {
+      setTimeout(() => {
+        el.style.display = 'none';
+      }, 70 * i * slide.transition);
+    }
+
+    return wait(els.length * 70);
   }
   async type(range) {
     const els = await this._animateChars(range);
     const slide = this.closest('preso-slide');
+    if (!slide.transition) return;
 
     let delay = 0;
 
-    await Promise.all(
-      els.map(el => {
-        const anim = el.animate([
-          { width: 0 },
-          { width: window.getComputedStyle(el).width }
-        ], {
-          duration: 0,
-          fill: 'backwards',
-          delay: delay * slide.transition
-        });
+    for (const el of els) {
+      delay += Math.pow(Math.random(), 2) * 150 + 20;
+      el.style.display = 'none';
+      setTimeout(() => {
+        el.style.display = '';
+      }, delay);
+    }
 
-        delay += Math.pow(Math.random(), 2) * 150 + 20;
-
-        return anim.finished;
-      })
-    );
+    return wait(delay);
   }
 }
 
