@@ -5,7 +5,6 @@ const del = require('del');
 const chokidar = require('chokidar');
 const rollup = require('rollup');
 const sass = require('rollup-plugin-sass');
-const babel = require('rollup-plugin-babel');
 const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 const promisify = require('util').promisify;
@@ -17,11 +16,6 @@ const argv = require('minimist')(process.argv.slice(2), {
 
 const rollupPlugins = [
   sass({options: {outputStyle: 'compressed'}}),
-  babel({
-    "plugins": [
-       ["transform-react-jsx"]
-     ]
-  }),
   resolve({ jsnext: true, main: true }),
   commonjs()
 ];
