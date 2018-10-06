@@ -2,7 +2,7 @@
 import Presentation from '../src/presentation';
 import Img from '../src/img';
 import {fadeBlank} from '../src/presentation/transitions';
-import {findTexts, h} from '../src/utils/dom';
+import {findTexts} from '../src/utils/dom';
 import {fadeIn} from '../src/utils/anims';
 const presentation = document.createElement('preso-presentation');
 document.body.append(presentation);
