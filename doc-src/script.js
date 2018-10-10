@@ -1,8 +1,8 @@
-/** @jsx h */
+import h from 'hyperhtml/esm';
 import Presentation from '../src/presentation';
 import Img from '../src/img';
 import {fadeBlank} from '../src/presentation/transitions';
-import {findTexts, h} from '../src/utils/dom';
+import {findTexts} from '../src/utils/dom';
 import {fadeIn} from '../src/utils/anims';
 const presentation = document.createElement('preso-presentation');
 document.body.append(presentation);
@@ -33,14 +33,14 @@ presentation.slide('This is my first slide', async slide => {
 
   //const world = <div style="opacity: 0">World!</div>;
 
-  slide.append(
+  slide.append(h`
     <div fade-in>
       world
       <preso-img src="imgs/1.png" class="img-1"/>
       <preso-img src="imgs/2.png" class="img-2"/>
       <preso-img src="imgs/3.png" class="img-3"/>
     </div>
-  );
+  `);
 });
 
 presentation.transition(fadeBlank());

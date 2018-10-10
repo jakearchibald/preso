@@ -5,7 +5,6 @@ const del = require('del');
 const chokidar = require('chokidar');
 const rollup = require('rollup');
 const sass = require('rollup-plugin-sass');
-const babel = require('rollup-plugin-babel');
 const resolve = require('rollup-plugin-node-resolve');
 const commonjs = require('rollup-plugin-commonjs');
 const promisify = require('util').promisify;
