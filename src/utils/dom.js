@@ -82,7 +82,7 @@ export function* findTexts(str, {
 const localStorageKeyPrefix = 'are-you-there-';
 
 export function createDetectableWindow(name) {
-  const win = window.open(null, name,
+  const win = window.open('', name,
     'menubar=no,toolbar=no,location=no,status=no'
   );
 
