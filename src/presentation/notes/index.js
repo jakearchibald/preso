@@ -80,7 +80,11 @@ export default class Notes extends HTMLElement {
     const slideIndex = this._slideList.children.length;
     this._slideList.append(html`
       <li class="preso-slide-list__item">
-        <button data-slide-index=${slideIndex} class="preso-slide-list__button">${name}</button>
+        <button
+          data-slide-index=${slideIndex}
+          class="preso-slide-list__button"
+          hidden="${name === "Unknown slide"}"
+        >${name}</button>
       </li>
     `);
   }
