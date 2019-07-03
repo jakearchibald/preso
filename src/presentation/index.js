@@ -69,6 +69,8 @@ export default class Presentation extends HTMLElement {
   }
 
   async connectedCallback() {
+    this._handleResize();
+
     if (!this._hasBeenConnected) {
       this.style.opacity = 0;
       this._hasBeenConnected = true;
