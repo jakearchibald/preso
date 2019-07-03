@@ -1,7 +1,6 @@
 import Slide from './';
-import TimelineLite from 'gsap/src/uncompressed/TimelineLite.js';
-import 'gsap/src/uncompressed/plugins/CSSPlugin.js';
-import 'gsap/src/uncompressed/easing/EasePack.js';
+import TimelineLite from 'gsap/TimelineLite';
+import 'gsap/CSSPlugin.js';
 
 Slide.prototype.timeline = function() {
   const timeline = new TimelineLite({

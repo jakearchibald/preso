@@ -22,7 +22,7 @@
     "rollup-plugin-sass": "^0.5.3"
   },
   "dependencies": {
-    "gsap": "^1.19.1",
+    "gsap": "^2.1.3",
     "highlight.js": "^9.12.0",
     "hyperhtml": "^2.4.3"
   }
