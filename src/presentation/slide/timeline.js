@@ -1,6 +1,9 @@
 import Slide from './';
 import TimelineLite from 'gsap/TimelineLite';
-import 'gsap/CSSPlugin.js';
+import CSSPlugin from 'gsap/CSSPlugin.js';
+
+// Working around tree-shaking
+window.CSSPlugin = CSSPlugin;
 
 Slide.prototype.timeline = function() {
   const timeline = new TimelineLite({
