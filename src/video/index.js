@@ -65,7 +65,7 @@ export default class Video extends SlideItem {
 }
 
 Video.observedAttributes = [
-  'width', 'height', 'src', 'crossorigin'
+  'width', 'height', 'src', 'crossorigin', 'muted'
 ];
 
 const propMap = new Map();
