@@ -11,7 +11,7 @@ export default class Slide extends HTMLElement {
     this._func = null;
     this._nextResolve = null;
     this._complete = false;
-    this._synchronizePromises = [];
+    this._synchronizePromise = Promise.resolve();
     this._currentStateNum = 0;
     this._autoAdvanceNum = 0;
     this.transition = true;
@@ -52,27 +52,27 @@ export default class Slide extends HTMLElement {
     }).then(() => {
       this._currentStateNum++;
       this._nextResolve = null;
-      this._synchronizePromises = [Promise.all(this._synchronizePromises)];
     });
   }
 
   async synchronize(promise = undefined) {
     if (promise) {
-      const caughtPromise = promise.catch(err => {
+      promise = promise.catch(() => {
         // Don't rethrow the error, just log
         console.error('synchronize promise rejected', err);
       });
-
-      this._synchronizePromises.push(caughtPromise);
+      this._synchronizePromise = this._synchronizePromise.then(() => promise);
     }
 
-    await frame();
-
-    return Promise.all(this._synchronizePromises);
+    let currentPromise;
+    do {
+      currentPromise = this._synchronizePromise;
+      await currentPromise;
+    } while (currentPromise !== this._synchronizePromise);
   }
 
   currentSynchronized() {
-    return Promise.all(this._synchronizePromises);
+    return this._synchronizePromise;
   }
 }
 
