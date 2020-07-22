@@ -228,6 +228,7 @@ export default class Code extends SlideItem {
   async backspace(range) {
     const els = await this._animateChars(range);
     const slide = this.closest('preso-slide');
+    if (!slide.transition) return;
 
     for (const [i, el] of els.reverse().entries()) {
       setTimeout(() => {
