@@ -2,7 +2,7 @@ import html from 'hyperhtml/esm';
 import { findText, getRelativeBoundingClientRect, frame, wait } from '../utils/dom.js';
 import { easeOutQuad, easeOutQuint } from '../utils/css-ease.js';
 import css from './style.scss';
-import hljs from 'highlight.js/lib/highlight.js';
+import hljs from 'highlight.js';
 import js from 'highlight.js/lib/languages/javascript.js';
 import xml from 'highlight.js/lib/languages/xml.js';
 import SlideItem from '../slide-item';
