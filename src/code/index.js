@@ -14,7 +14,7 @@ document.head.append(html`<style>${css}</style>`);
 
 function normalizeIndent(str) {
   // trim empty lines from start & end
-  str = str.replace(/^\s?\n|\n\s?$/g, '');
+  str = str.replace(/^\s*\n|\n\s*$/g, '');
 
   const lines = str.split('\n');
   const indentLen = /^\s*/.exec(lines[0])[0].length;
@@ -43,7 +43,7 @@ export default class Code extends SlideItem {
   }
   attributeChangedCallback(name, oldVal, newVal) {
     if (name == 'src') {
-      this._content = fetch(newVal).then(r => r.text());
+      this._content = fetch(newVal).then(r => r.text()).then(t => t.replace(/\r?\n$/, ''));
     }
     if (this._hasBeenConnected) this._queueUpdate();
   }
