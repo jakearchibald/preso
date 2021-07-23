@@ -152,8 +152,8 @@ export default class Presentation extends HTMLElement {
       stageRect.height / this.height
     );
 
-    const stageLeft = (stageRect.width - (this.width * stageScale)) / 2;
-    const stageTop = (stageRect.height - (this.height * stageScale)) / 2;
+    const stageLeft = (stageRect.width - (this.width * stageScale)) / 2 + stageRect.left;
+    const stageTop = (stageRect.height - (this.height * stageScale)) / 2 + stageRect.top;
 
     this._stage.style.transform = `translate(${stageLeft}px, ${stageTop}px) scale(${stageScale})`;
 
@@ -163,8 +163,8 @@ export default class Presentation extends HTMLElement {
       notesRect.height / this.notesHeight
     );
 
-    const notesLeft = (notesRect.width - (this.notesWidth * notesScale)) / 2;
-    const notesTop = (notesRect.height - (this.notesHeight * notesScale)) / 2;
+    const notesLeft = (notesRect.width - (this.notesWidth * notesScale)) / 2 + notesRect.left;
+    const notesTop = (notesRect.height - (this.notesHeight * notesScale)) / 2 + notesRect.top;
 
     this.notes.style.transform = `translate(${notesLeft}px, ${notesTop}px) scale(${notesScale})`;
   }
